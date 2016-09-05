@@ -42,12 +42,10 @@
     return currentSvg;
   }
 
-
   // Define the div for the tooltip
   var tooltipDiv = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
-
 
   d3.json('data/data.json', function(error, root) {
     if (error) {
@@ -80,22 +78,25 @@
       .attr('r', function(d) { return d.r; })
       .style('fill', function(d) { return color(d.packageName); })
       .on("mouseover", function(d) {
-          console.log(d);
-          tooltipDiv.transition()
-              .duration(100)
-              .style("opacity", .9);
-          tooltipDiv.html(
-              "<h4>" + d.packageName + "</h4>" +
-              "<p> Positive : " + d.positive + "</p>" +
-              "<p> Negative : " + d.negative + "</p>"
-              )
-              .style("left", (d3.event.pageX) + "px")
-              .style("top", (d3.event.pageY - 28) + "px");
-          })
+        console.log(d);
+        tooltipDiv.transition()
+            .duration(100)
+            .style("opacity", .9);
+        var html = "<h4>" + d.packageName + "</h4>";
+        if (d.positive) {
+            html += "<p> Positive : " + d.positive + "</p>";
+        }
+        if (d.negative) {
+            html += "<p> Negative : " + d.negative + "</p>";
+        }
+        tooltipDiv.html(html)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
       .on("mouseout", function(d) {
-          tooltipDiv.transition()
-              .duration(100)
-              .style("opacity", 0);
+        tooltipDiv.transition()
+          .duration(100)
+          .style("opacity", 0);
       });
 
     var text = node.select('text')

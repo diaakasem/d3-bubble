@@ -11,7 +11,7 @@
    * @return size of the node ( to be used to draw a bubble)
    */
   function sizeOf(node) {
-    return (node.positive || 0) + (node.negative || 0);
+    return Math.abs((node.positive || 0) - (node.negative || 0));
   }
 
   /**
