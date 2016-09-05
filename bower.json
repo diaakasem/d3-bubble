@@ -3,10 +3,7 @@
   "private": true,
   "dependencies": {
     "jquery": "~2.1.1",
-    "d3": "3.5.11",
-    "q": "#1.0.1",
-    "lodash": "^4.15.0",
-    "gridstack": "^0.2.6"
+    "d3": "3.5.11"
   },
   "devDependencies": {
     "chai": "^3.5.0",
