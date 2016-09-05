@@ -11,8 +11,10 @@
    * @return size of the node ( to be used to draw a bubble)
    */
   function sizeOf(node) {
-    return Math.abs((node.positive || 0) - (node.negative || 0));
+    return (node.positive || 0) - (node.negative || 0);
   }
+
+  this.bubble.utils.sizeOf = sizeOf;
 
   /**
    * Modifies the json data
@@ -36,7 +38,8 @@
         name: k,
         children: [{
           name: k,
-          size: sizeOf(v),
+          size: Math.abs(sizeOf(v)),
+          isNegative: sizeOf(v) < 0,
           negative: v.negative,
           positive: v.positive
         }]

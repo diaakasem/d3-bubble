@@ -19,12 +19,17 @@
 
   var container = d3.select('.svg-container');
   var format = d3.format(',d'),
-    color = d3.scale.category20c();
+    //color = d3.scale.category20c();
+    positiveColor = d3.scale.linear().domain([1,300])
+      .interpolate(d3.interpolateHcl)
+      .range([d3.rgb('#6ca41d'), d3.rgb("#fdfefb")]),
+    negativeColor = d3.scale.linear().domain([1,300])
+      .interpolate(d3.interpolateHcl)
+      .range([d3.rgb('#0087fc'), d3.rgb("#001E38")]);
 
   var bubble = d3.layout.pack()
     .sort(null)
     .padding(1.5);
-
 
   function resizeSVG(container) {
     var currentSvg = container.select('svg');
@@ -51,6 +56,12 @@
     if (error) {
       throw error;
     }
+    var domain = d3.extent(_.values(root), function(d) {
+      return Math.abs(self.bubble.utils.sizeOf(d));
+    });
+    console.log(domain);
+    positiveColor.domain(domain);
+    negativeColor.domain(domain);
     root = self.bubble.utils.modify(root);
     self.bubble.root = root;
     draw(resizeSVG(container));
@@ -76,9 +87,10 @@
     }
     circle
       .attr('r', function(d) { return d.r; })
-      .style('fill', function(d) { return color(d.packageName); })
+      .style('fill', function(d) {
+        return d.isNegative ? negativeColor(d.value) : positiveColor(d.value) ;
+      })
       .on("mouseover", function(d) {
-        console.log(d);
         tooltipDiv.transition()
             .duration(100)
             .style("opacity", .9);
@@ -104,6 +116,9 @@
       text = node.append('text');
     }
     text.attr('dy', '.3em')
+      .style('fill', function(d) {
+        return d.isNegative ? 'white' : 'black' ;
+      })
       .style('text-anchor', 'middle')
       .text(function(d) { return d.className.substring(0, d.r / 3); });
   }
@@ -121,6 +136,7 @@
           className: node.name,
           positive: node.positive,
           negative: node.negative,
+          isNegative: node.isNegative,
           value: node.size
         });
       }
