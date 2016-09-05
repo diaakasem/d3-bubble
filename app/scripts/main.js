@@ -22,10 +22,10 @@
     //color = d3.scale.category20c();
     positiveColor = d3.scale.linear().domain([1,300])
       .interpolate(d3.interpolateHcl)
-      .range([d3.rgb('#6ca41d'), d3.rgb("#fdfefb")]),
+      .range([d3.rgb("#95DB33"), d3.rgb("#95DB33")]),
     negativeColor = d3.scale.linear().domain([1,300])
       .interpolate(d3.interpolateHcl)
-      .range([d3.rgb('#0087fc'), d3.rgb("#001E38")]);
+      .range([d3.rgb("#001E38"), d3.rgb("#001E38")]);
 
   var bubble = d3.layout.pack()
     .sort(null)
