@@ -11,12 +11,10 @@
 
     <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
-    <link rel="stylesheet" href="/bower_components/gridstack/dist/gridstack.css" />
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
 
   </head>
@@ -24,35 +22,14 @@
     <!--[if lt IE 10]>
       <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-    <div class="grid-stack">
-      <div class="grid-stack-item"
-           data-gs-x="0" data-gs-y="0"
-                         data-gs-width="4" data-gs-height="2">
-        <div class="grid-stack-item-content">
-          <p>Some cool Text</p>
-        </div>
-      </div>
-      <div class="grid-stack-item graph-container"
-           data-gs-x="4" data-gs-y="0"
-                         data-gs-width="4" data-gs-height="4">
-        <div class="grid-stack-item-content svg-container">
-        </div>
-      </div>
-    </div>
-
+    <div class="svg-container">
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/d3/d3.js"></script>
-    <script src="/bower_components/q/q.js"></script>
-    <script src="/bower_components/lodash/lodash.js"></script>
-    <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
-    <script src="/bower_components/gridstack/dist/gridstack.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js scripts/main.js -->
-    <script src="scripts/utils.js"></script>
     <script src="scripts/main.js"></script>
     <!-- endbuild -->
   </body>

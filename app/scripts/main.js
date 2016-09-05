@@ -1,31 +1,75 @@
 /*globals $:false, d3:false */
 'use strict';
 
-(function() {
+$.getScript('/bower_components/d3/d3.js').done(function() {
 
-  var self = this;
+  var self = window;
   self.bubble = self.bubble || {};
+  self.bubble.utils = {};
 
-  var options = {
-    cellHeight: 80,
-    verticalMargin: 10
+  /**
+   * Takes a data node with positive and negative attributes and calculates the
+   * size of the node
+   *
+   * @param node data node with positive and negative attributes
+   * @return size of the node ( to be used to draw a bubble)
+   */
+  function sizeOf(node) {
+    return (node.positive || 0) - (node.negative || 0);
+  }
+  self.bubble.utils.sizeOf = sizeOf;
+
+  /**
+   * Modifies the json data
+   * @param data the loaded data from .json file
+   * @return data with the structure
+   * {
+   *   value:  value,
+   *   lng:  longitude_coordinates,
+   *   lat:  latitude_coordinates,
+   *   time: timestamp
+   * }
+   */
+  self.bubble.utils.modify = function (data) {
+    var children = [];
+    var newData = {
+      name: 'Bubble Chart',
+      children: children
+    };
+    $.each(data, function(k, v) {
+      children.push({
+        name: k,
+        children: [{
+          name: k,
+          size: Math.abs(sizeOf(v)),
+          isNegative: sizeOf(v) < 0,
+          negative: v.negative,
+          positive: v.positive
+        }]
+      });
+    });
+    console.log(newData);
+    return newData;
   };
-  $('.grid-stack').gridstack(options);
-  $('.grid-stack').on('resizestop', function (event) {
-    if ($(event.target).hasClass('graph-container')) {
-      draw(resizeSVG(container));
-    }
-  });
+
+  /**
+   * Gets the width and height of the parent node of the element passed
+   */
+  self.bubble.utils.getWidthHeight = function(element) {
+    var node = element.node().parentNode;
+    return {
+      width: node.offsetWidth,
+      height: node.offsetHeight
+    };
+  };
 
   var container = d3.select('.svg-container');
-  var format = d3.format(',d'),
-    //color = d3.scale.category20c();
-    positiveColor = d3.scale.linear().domain([1,300])
+  var positiveColor = d3.scale.linear().domain([1,300])
       .interpolate(d3.interpolateHcl)
-      .range([d3.rgb("#95DB33"), d3.rgb("#95DB33")]),
+      .range([d3.rgb('#95DB33'), d3.rgb('#95DB33')]),
     negativeColor = d3.scale.linear().domain([1,300])
       .interpolate(d3.interpolateHcl)
-      .range([d3.rgb("#001E38"), d3.rgb("#001E38")]);
+      .range([d3.rgb('#001E38'), d3.rgb('#001E38')]);
 
   var bubble = d3.layout.pack()
     .sort(null)
@@ -36,8 +80,7 @@
     if (!currentSvg.empty()) {
       currentSvg.remove();
     }
-    currentSvg = container.append('svg')
-      .attr('class', 'bubble');
+    currentSvg = container.append('svg').attr('class', 'bubble');
     var wh = self.bubble.utils.getWidthHeight(container);
     var diameter = Math.min(wh.width, wh.height);
     currentSvg.attr('width', diameter).attr('height', diameter);
@@ -48,21 +91,31 @@
   }
 
   // Define the div for the tooltip
-  var tooltipDiv = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+  var tooltipDiv = d3.select('body').append('div')
+    .attr('class', 'tooltip')
+    .style('position', 'absolute')
+    .style('text-align', 'left')
+    .style('width', '150px')
+    .style('height', '80px')
+    .style('padding', '10px')
+    .style('font', '12px sans-serif')
+    .style('background', '#E8E8E8')
+    .style('border', '0px')
+    .style('border-radius', '3px')
+    .style('pointer-events', 'none')
+    .style('opacity', 0);
 
   d3.json('data/data.json', function(error, root) {
     if (error) {
       throw error;
     }
-    var domain = d3.extent(_.values(root), function(d) {
+    var domain = d3.extent($.map(root, function(v) { return v; }), function(d) {
       return Math.abs(self.bubble.utils.sizeOf(d));
     });
-    console.log(domain);
     positiveColor.domain(domain);
     negativeColor.domain(domain);
     root = self.bubble.utils.modify(root);
+    console.log(root);
     self.bubble.root = root;
     draw(resizeSVG(container));
   });
@@ -73,7 +126,9 @@
         .filter(function(d) { return !d.children; }))
       .enter().append('g')
         .attr('class', 'node')
-        .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; });
+        .attr('transform', function(d) {
+          return 'translate(' + d.x + ',' + d.y + ')';
+        });
 
     //var title = node.select('title')
     //if (title.empty()) {
@@ -81,7 +136,7 @@
     //}
     //title.text(function(d) { return d.className + ': ' + format(d.value); });
 
-    var circle = node.select('circle')
+    var circle = node.select('circle');
     if (circle.empty()) {
       circle = node.append('circle');
     }
@@ -90,28 +145,28 @@
       .style('fill', function(d) {
         return d.isNegative ? negativeColor(d.value) : positiveColor(d.value) ;
       })
-      .on("mouseover", function(d) {
+      .on('mouseover', function(d) {
         tooltipDiv.transition()
             .duration(100)
-            .style("opacity", .9);
-        var html = "<h4>" + d.packageName + "</h4>";
+            .style('opacity', 0.9);
+        var html = "<h4 style='margin: 0; border-bottom: 1px solid black; padding: 5px; padding-left: 5px;'>" + d.packageName + "</h4>";
         if (d.positive) {
-            html += "<p> Positive : " + d.positive + "</p>";
+            html += '<p> Positive : ' + d.positive + '</p>';
         }
         if (d.negative) {
-            html += "<p> Negative : " + d.negative + "</p>";
+            html += '<p> Negative : ' + d.negative + '</p>';
         }
         tooltipDiv.html(html)
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
+          .style('left', (d3.event.pageX) + 'px')
+          .style('top', (d3.event.pageY - 28) + 'px');
       })
-      .on("mouseout", function(d) {
+      .on('mouseout', function() {
         tooltipDiv.transition()
           .duration(100)
-          .style("opacity", 0);
+          .style('opacity', 0);
       });
 
-    var text = node.select('text')
+    var text = node.select('text');
     if (text.empty()) {
       text = node.append('text');
     }
@@ -119,8 +174,12 @@
       .style('fill', function(d) {
         return d.isNegative ? 'white' : 'black' ;
       })
+      .style('font', '10px sans-serif')
+      .style('pointer-events', ' none')
       .style('text-anchor', 'middle')
-      .text(function(d) { return d.className.substring(0, d.r / 3); });
+      .text(function(d) {
+        return d.className.substring(0, d.r / 3);
+      });
   }
 
   // Returns a flattened hierarchy containing all leaf nodes under the root.
@@ -146,5 +205,4 @@
     return {children: classesArr};
   }
 
-
-}).call(window);
+});
