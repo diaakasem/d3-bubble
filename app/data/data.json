@@ -1,0 +1,24 @@
+{
+  "online_menu": {
+    "positive": 156,
+    "negative": 237
+  },
+  "online menu beforehand": {
+    "negative": 3
+  },
+  "fancy high tech menu board": {
+    "negative": 2
+  },
+  "digital menu": {
+    "positive": 18,
+    "negative": 5
+  },
+  "paper menu": {
+    "positive": 87,
+    "negative": 134
+  },
+  "large menu board": {
+    "positive": 18,
+    "negative": 4
+  }
+}
