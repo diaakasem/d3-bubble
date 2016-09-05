@@ -3,6 +3,31 @@
 
 $.getScript('/bower_components/d3/d3.js').done(function() {
 
+  var originalData = {
+    "online_menu": {
+      "positive": 156,
+      "negative": 237
+    },
+    "online menu beforehand": {
+      "negative": 3
+    },
+    "fancy high tech menu board": {
+      "negative": 2
+    },
+    "digital menu": {
+      "positive": 18,
+      "negative": 5
+    },
+    "paper menu": {
+      "positive": 87,
+      "negative": 134
+    },
+    "large menu board": {
+      "positive": 18,
+      "negative": 4
+    }
+  };
+
   var self = window;
   self.bubble = self.bubble || {};
   self.bubble.utils = {};
@@ -105,10 +130,8 @@ $.getScript('/bower_components/d3/d3.js').done(function() {
     .style('pointer-events', 'none')
     .style('opacity', 0);
 
-  d3.json('data/data.json', function(error, root) {
-    if (error) {
-      throw error;
-    }
+  //d3.json('data/data.json', function(error, root) {
+  function init(root) {
     var domain = d3.extent($.map(root, function(v) { return v; }), function(d) {
       return Math.abs(self.bubble.utils.sizeOf(d));
     });
@@ -118,7 +141,8 @@ $.getScript('/bower_components/d3/d3.js').done(function() {
     console.log(root);
     self.bubble.root = root;
     draw(resizeSVG(container));
-  });
+  }
+  init(originalData);
 
   function draw(svg) {
     var node = svg.selectAll('.node')
